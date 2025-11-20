@@ -34,24 +34,29 @@ hole_dia = 18;
 cable_offset = 20;  // Offset to side of screws
 
 // Testing option - set to true to print only bottom half for testing
-test_bottom_half_only = true;  // Change to true for test print
+test_bottom_half_only = false;  // Change to true for test print
+
+// Bambu A1 printer constraint - max Y build dimension is 256mm
+max_build_y = 250;
+// Calculate the actual frame height to use (limited by printer)
+frame_y_height = min(ipad_height + bottom_frame_height, max_build_y - 2*frame_width);
 
 module main_body() {
     difference() {
         union() {
             // Main back plate with reinforcement ribs
             translate([-frame_width, -frame_width, 0])
-                cube([ipad_width + 2*frame_width, 
-                      ipad_height + bottom_frame_height,  // Open at top
+                cube([ipad_width + 2*frame_width,
+                      frame_y_height,  // Limited by printer build volume
                       wall_plate_thickness]);
             
             // Side frames (left and right)
             translate([-frame_width, -frame_width, 0])
-                cube([frame_width, ipad_height + bottom_frame_height, 
+                cube([frame_width, frame_y_height,
                       wall_plate_thickness + frame_depth]);
-            
+
             translate([ipad_width, -frame_width, 0])
-                cube([frame_width, ipad_height + bottom_frame_height, 
+                cube([frame_width, frame_y_height,
                       wall_plate_thickness + frame_depth]);
             
             // Bottom frame with cable channel - taller to cover USB plug
@@ -79,10 +84,10 @@ module main_body() {
             
             // Small lips on sides to hold iPad
             translate([0, 0, wall_plate_thickness + ipad_depth])
-                cube([lip_height, ipad_height, frame_depth - ipad_depth]);
-            
+                cube([lip_height, frame_y_height - frame_width, frame_depth - ipad_depth]);
+
             translate([ipad_width - lip_height, 0, wall_plate_thickness + ipad_depth])
-                cube([lip_height, ipad_height, frame_depth - ipad_depth]);
+                cube([lip_height, frame_y_height - frame_width, frame_depth - ipad_depth]);
             
             // Bottom lip extends fully across - NO gap at front
             translate([0, 0, wall_plate_thickness + ipad_depth])
@@ -116,7 +121,7 @@ module main_body() {
         
         // Loop from center outwards in both directions
         for(x = [0 : hole_spacing : ipad_width/2]) {
-            for(y = [hole_spacing : hole_spacing : ipad_height - hole_dia]) {
+            for(y = [hole_spacing : hole_spacing : frame_y_height - hole_dia]) {
                 // Skip holes near mounting screws
                 // Right side from center
                 if (abs(ipad_width/2 + x - ipad_width/2) > 15 || 
