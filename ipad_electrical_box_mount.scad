@@ -120,8 +120,10 @@ module main_body() {
             cylinder(h=wall_plate_thickness, d=8, $fn=30);
         
         // Brick-pattern offset holes for better strength and material savings
-        for(y_index = [0 : floor((frame_y_height - hole_dia) / hole_spacing) - 1]) {
-            y = hole_spacing + y_index * hole_spacing;
+        // Move circles closer in Y-direction to account for offsets
+        y_adjustment = 1.2;
+        for(y_index = [0 : floor(y_adjustment * (frame_y_height - hole_dia) / hole_spacing) - 1]) {
+            y = hole_spacing + y_index * hole_spacing / y_adjustment;
             // Offset every other row by half spacing for brick pattern
             x_offset = (y_index % 2) * hole_spacing / 2;
 
