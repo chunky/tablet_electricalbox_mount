@@ -4,7 +4,7 @@
 
 
 // Clearance added to ipad dimensions
-ipad_clearance = 0.3;
+ipad_clearance = 0.4;
 // iPad dimensions (iPad 8th Gen model A2270 - 10.2 inch)
 ipad_width = 174.1 + ipad_clearance;  // 6.8 inches
 ipad_height = 250.6 + ipad_clearance; // 9.8 inches
@@ -127,7 +127,7 @@ module main_body() {
             // Offset every other row by half spacing for brick pattern
             x_offset = (y_index % 2) * hole_spacing / 2;
 
-            for(x = [-ipad_width/2 : hole_spacing : ipad_width/2]) {
+            for(x = [-ipad_width/2 + hole_spacing : hole_spacing : ipad_width/2 - hole_spacing]) {
                 // Skip holes near mounting screws
                 if (abs((ipad_width/2 + x + x_offset) - ipad_width/2) > 15 ||
                     (abs(y - screw_from_bottom) > 15 &&
