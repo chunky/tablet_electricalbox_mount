@@ -26,8 +26,8 @@ cable_clearance_width = 30;
 cable_clearance_height = 20;
 
 // Skeletonize back plate - create lightening holes
-hole_spacing = 20;
-hole_dia = 18;
+hole_spacing = 15;
+hole_dia = 13;
 
 // Cable clearance hole in back plate - positioned BETWEEN the screw holes but offset to the side
 // This is where cable exits from center of electrical box
@@ -100,7 +100,7 @@ module main_body() {
                    -1])
             cube([cable_channel_width, 
                   screw_from_bottom + gang_box_screw_spacing/2 + cable_clearance_height/2 + 1, 
-                  wall_plate_thickness + 2]);
+                  wall_plate_thickness + ipad_depth]);
         
         // Mounting screw holes (standard single-gang spacing)
         screw_hole_dia = 4;
@@ -119,22 +119,18 @@ module main_body() {
         translate([ipad_width/2, screw_from_bottom + gang_box_screw_spacing, wall_plate_thickness/2])
             cylinder(h=wall_plate_thickness, d=8, $fn=30);
         
-        // Loop from center outwards in both directions
-        for(x = [0 : hole_spacing : ipad_width/2]) {
-            for(y = [hole_spacing : hole_spacing : frame_y_height - hole_dia]) {
+        // Brick-pattern offset holes for better strength and material savings
+        for(y_index = [0 : floor((frame_y_height - hole_dia) / hole_spacing) - 1]) {
+            y = hole_spacing + y_index * hole_spacing;
+            // Offset every other row by half spacing for brick pattern
+            x_offset = (y_index % 2) * hole_spacing / 2;
+
+            for(x = [-ipad_width/2 : hole_spacing : ipad_width/2]) {
                 // Skip holes near mounting screws
-                // Right side from center
-                if (abs(ipad_width/2 + x - ipad_width/2) > 15 || 
-                    (abs(y - screw_from_bottom) > 15 && 
+                if (abs((ipad_width/2 + x + x_offset) - ipad_width/2) > 15 ||
+                    (abs(y - screw_from_bottom) > 15 &&
                      abs(y - (screw_from_bottom + gang_box_screw_spacing)) > 15)) {
-                    translate([ipad_width/2 + x, y, -1])
-                        cylinder(h=wall_plate_thickness + 2, d=hole_dia, $fn=30);
-                }
-                // Left side from center (skip x=0 to avoid duplicate at center)
-                if (x > 0 && (abs(ipad_width/2 - x - ipad_width/2) > 15 || 
-                    (abs(y - screw_from_bottom) > 15 && 
-                     abs(y - (screw_from_bottom + gang_box_screw_spacing)) > 15))) {
-                    translate([ipad_width/2 - x, y, -1])
+                    translate([ipad_width/2 + x + x_offset, y, -1])
                         cylinder(h=wall_plate_thickness + 2, d=hole_dia, $fn=30);
                 }
             }
