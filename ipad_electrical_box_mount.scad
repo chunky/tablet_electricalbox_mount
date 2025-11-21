@@ -4,7 +4,7 @@
 
 
 // Clearance added to ipad dimensions
-ipad_clearance = 0.4;
+ipad_clearance = 1.0;
 // iPad dimensions (iPad 8th Gen model A2270 - 10.2 inch)
 ipad_width = 174.1 + ipad_clearance;  // 6.8 inches
 ipad_height = 250.6 + ipad_clearance; // 9.8 inches
@@ -17,13 +17,13 @@ wall_plate_thickness = 3;
 lip_height = 4;   // Small lip to hold iPad sides and bottom
 bottom_frame_height = 20;  // Taller bottom frame to cover USB plug
 cable_channel_width = 15;  // Narrow channel at front for cable only
-cable_clearance_back = 40;  // Wide clearance in back for connector
+cable_clearance_back = 30;  // Wide clearance in back for connector
 
 // Single-gang box parameters
 gang_box_screw_spacing = 83.3;  // Standard vertical spacing
 gang_box_width = 70;
 cable_clearance_width = 30;
-cable_clearance_height = 20;
+cable_clearance_height = 40;
 
 // Skeletonize back plate - create lightening holes
 hole_spacing = 15;
@@ -36,8 +36,8 @@ bevel_size = 2;  // Size of front edge bevels
 // This is where cable exits from center of electrical box
 cable_offset = 20;  // Offset to side of screws
 
-// Testing option - set to true to print only bottom half for testing
-test_bottom_half_only = false;  // Change to true for test print
+// Testing option - set to true to print only bottom half for test fitting
+test_bottom_only = false;  // Change to true for test print
 
 // Bambu A1 printer constraint - max Y build dimension is 256mm
 max_build_y = 195;
@@ -110,7 +110,7 @@ module main_body() {
                    -1,
                    -1])
             cube([cable_channel_width,
-                  screw_from_bottom + gang_box_screw_spacing/2 + cable_clearance_height/2 + 1,
+                  screw_from_bottom + cable_clearance_height/2 + 1,
                   wall_plate_thickness + ipad_depth - 1]);
 
         translate([frame_width + ipad_width/2, screw_from_bottom, -1])
@@ -129,7 +129,7 @@ module main_body() {
         // Brick-pattern offset holes for better strength and material savings
         // Move circles closer in Y-direction to account for offsets
         y_adjustment = 1.2;
-        for(y_index = [0 : floor(y_adjustment * (frame_y_height - hole_dia) / hole_spacing) - 1]) {
+        for(y_index = [1 : floor(y_adjustment * (frame_y_height - hole_dia) / hole_spacing) - 1]) {
             y = hole_spacing + y_index * hole_spacing / y_adjustment;
             // Offset every other row by half spacing for brick pattern
             x_offset = (y_index % 2) * hole_spacing / 2;
@@ -197,13 +197,13 @@ module beveled_body() {
 }
 
 // Render the mount
-if (test_bottom_half_only) {
+if (test_bottom_only) {
     // Only render bottom half for testing - includes screws and cable management
     intersection() {
         beveled_body();
         translate([-10, -10, -1])
             cube([ipad_width + 2*frame_width + 20,
-                  ipad_height/2 + 20,  // Half height plus extra for cable area
+                  ipad_height/3,  // Half height plus extra for cable area
                   wall_plate_thickness + frame_depth + 2]);
     }
 } else {
