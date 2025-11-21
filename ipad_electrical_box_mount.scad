@@ -29,6 +29,9 @@ cable_clearance_height = 20;
 hole_spacing = 15;
 hole_dia = 13;
 
+// Bevel parameters
+bevel_size = 2;  // Size of front edge bevels
+
 // Cable clearance hole in back plate - positioned BETWEEN the screw holes but offset to the side
 // This is where cable exits from center of electrical box
 cable_offset = 20;  // Offset to side of screws
@@ -40,6 +43,13 @@ test_bottom_half_only = false;  // Change to true for test print
 max_build_y = 195;
 // Calculate the actual frame height to use (limited by printer)
 frame_y_height = min(ipad_height + bottom_frame_height, max_build_y - 2*frame_width);
+
+// Module to create a 45-degree chamfer cut
+module bevel(length, size=bevel_size) {
+    rotate([0, 90, 0])
+    linear_extrude(length)
+        polygon([[0, 0], [size, 0], [0, size]]);
+}
 
 module main_body() {
     difference() {
@@ -68,7 +78,7 @@ module main_body() {
                            wall_plate_thickness])
                 cube([cable_clearance_back,
                           3*bottom_frame_height + 2,
-                          frame_depth - 2]);  // Stops before reaching front face
+                          frame_depth - 4]);  // Stops before reaching front face
 
                 // Opening at very bottom for USB cable to plug into iPad from below
                 translate([frame_width + ipad_width/2 - cable_channel_width/2,
@@ -101,7 +111,7 @@ module main_body() {
                    -1])
             cube([cable_channel_width,
                   screw_from_bottom + gang_box_screw_spacing/2 + cable_clearance_height/2 + 1,
-                  wall_plate_thickness + ipad_depth]);
+                  wall_plate_thickness + ipad_depth - 1]);
 
         translate([frame_width + ipad_width/2, screw_from_bottom, -1])
             cylinder(h=wall_plate_thickness + 2, d=screw_hole_dia, $fn=30);
@@ -137,11 +147,60 @@ module main_body() {
     }
 }
 
+// Module to apply bevels to all front edges
+module beveled_body() {
+    front_z = wall_plate_thickness + frame_depth;
+    total_width = ipad_width + 2*frame_width;
+
+    difference() {
+        
+        main_body();
+
+        // Left side frame - outer front edge (vertical along Y)
+        translate([0, 0, front_z])
+            rotate([270, 0, 90])
+            bevel(frame_y_height);
+
+        // Right side frame - outer front edge (vertical along Y)
+        translate([total_width, 0, front_z])
+            rotate([0, 0, 90])
+            bevel(frame_y_height);
+
+        // Bottom frame - outer front edge (horizontal along X)
+        translate([0, 0, front_z])
+            bevel(total_width);
+
+        // Top frame - outer front edge (horizontal along X)
+        translate([0, frame_y_height, front_z])
+            rotate([270, 0, 0])
+            bevel(total_width);
+            
+        // Bottom left frame corner
+        rotate([180, 270, 180])
+            bevel(frame_depth+wall_plate_thickness);
+        
+        // Bottom right frame corner
+        translate([total_width, 0, 0])
+        rotate([180, 270, 270])
+            bevel(frame_depth+wall_plate_thickness);
+            
+        // Top left frame corner
+        translate([0, frame_y_height, 0])
+        rotate([180, 270, 90])
+            bevel(frame_depth+wall_plate_thickness);
+
+        // Top right frame corner
+        translate([total_width, frame_y_height, 0])
+        rotate([180, 270, 0])
+            bevel(frame_depth+wall_plate_thickness);
+    }
+}
+
 // Render the mount
 if (test_bottom_half_only) {
     // Only render bottom half for testing - includes screws and cable management
     intersection() {
-        main_body();
+        beveled_body();
         translate([-10, -10, -1])
             cube([ipad_width + 2*frame_width + 20,
                   ipad_height/2 + 20,  // Half height plus extra for cable area
@@ -149,7 +208,7 @@ if (test_bottom_half_only) {
     }
 } else {
     // Render full mount
-    main_body();
+    beveled_body();
 }
 
 // Visual reference (comment out for printing)
