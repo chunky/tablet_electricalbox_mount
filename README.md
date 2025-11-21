@@ -22,6 +22,10 @@ the connector where it meets the tablet.
 Since I already have PoE in my house, I ran PoE to the electrical box
 then had a PoE-to-tablet-connector converter.
 
+## This is what it looks like
+
+<img src="readme_imgs/openscad.png">
+
 ## Making it work for you
 
 The SCAD file has lots of parameters at the top. The most important are
