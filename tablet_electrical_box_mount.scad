@@ -12,12 +12,12 @@ tablet_depth = 7.5 + tablet_clearance;    // 0.29 inches
 
 // Frame parameters
 frame_width = 2;  // Width of frame border
-frame_depth = 10; // How deep the frame pocket is
-wall_plate_thickness = 3; // Back plate against wall
+frame_depth = 11.5; // How deep the frame pocket is
+wall_plate_thickness = 4; // Back plate against wall
 lip_height = 4;   // Small lip to hold iPad sides and bottom
-bottom_frame_height = 20;  // Taller bottom frame to cover USB plug
+bottom_frame_height = 35;  // Taller bottom frame to cover USB plug
 cable_channel_width = 15;  // Narrow channel at front for cable only
-cable_clearance_back = 30;  // Wide clearance in back for connector
+cable_clearance_back = 60;  // Wide clearance in back for connector
 
 // Single-gang box parameters
 gang_box_screw_spacing = 83.3;  // Standard vertical spacing
@@ -27,7 +27,7 @@ gang_box_width = 70;
 // This is where cable exits from center of electrical box
 cable_offset = 20;  // Offset to side of screws
 cable_clearance_width = 30; // Width of slot cable goes through
-cable_clearance_height = 40; // Cabling gap
+cable_clearance_height = 50; // Cabling gap
 
 // Skeletonize back plate. Simplify, then add lightness
 hole_spacing = 15;
@@ -78,7 +78,7 @@ module main_body() {
                            wall_plate_thickness])
                 cube([cable_clearance_back,
                           3*bottom_frame_height + 2,
-                          frame_depth - 4]);  // Stops before reaching front face
+                          frame_depth - 2]);  // Stops before reaching front face
 
                 // Opening at very bottom for USB cable to plug into iPad from below
                 translate([frame_width + tablet_width/2 - cable_channel_width/2,
@@ -129,7 +129,7 @@ module main_body() {
         // Brick-pattern offset holes for better strength and material savings
         // Move circles closer in Y-direction to account for offsets
         y_adjustment = 1.2;
-        for(y_index = [1 : floor(y_adjustment * (frame_y_height - hole_dia) / hole_spacing) - 1]) {
+        for(y_index = [3 : floor(y_adjustment * (frame_y_height - hole_dia) / hole_spacing) - 1]) {
             y = hole_spacing + y_index * hole_spacing / y_adjustment;
             // Offset every other row by half spacing for brick pattern
             x_offset = (y_index % 2) * hole_spacing / 2;
