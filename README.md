@@ -24,7 +24,7 @@ then had a PoE-to-tablet-connector converter.
 
 ## This is what it looks like
 
-<img src="readme_imgs/openscad.png">
+<img src="readme_imgs/openscad.png"><img src="readme_imgs/with_tablet.jpg"><img src="readme_imgs/without_tablet.jpg">
 
 ## Making it work for you
 
